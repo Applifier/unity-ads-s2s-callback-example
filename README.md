@@ -3,7 +3,7 @@ Unity Ads S2S Callback Example
 
 A server-side example for handling [Server-to-Server Redeem Callbacks](http://unityads.unity3d.com/help/Documentation%20for%20Publishers/Server-to-server-Redeem-Callbacks) for [Unity Ads](http://unityads.unity3d.com).
 
-Plese keep in mind that this is not a complete example. It only works as far as testing callback functionality between the Unity Ads server and your server. It can however be used as a basis for writing your own callback scripts. See more details in the section for [customizing the reward script]().
+Plese keep in mind that this is not a complete example. It only works as far as testing callback functionality between the Unity Ads server and your server. It can however be used as a basis for writing your own callback scripts. See more details in the section for [customizing the reward script](#reward).
 
 ## Setup Instructions
 
