@@ -44,4 +44,4 @@ Plese keep in mind that this is not a complete example. It only works as far as 
 1.	Enter the URL for your callback script into the address bar of the browser and press enter.
 1.	You should see "Response: 202 - Test OK" on an otherwise blank page, indicating that the script is both publicly visible and working properly.
 
-If the test is successful, contact Unity Ads Support at <support@applifier.com> and request to update the callback URL for your game ID with the URL to your callback script.
+If the test is successful, contact Unity Ads Support at <unityads-support@unity3d.com> and request to update the callback URL for your game ID with the URL to your callback script.
