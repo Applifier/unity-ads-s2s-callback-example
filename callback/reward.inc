@@ -1,7 +1,7 @@
 <?php
 
 // Specify an email address to receive alerts at.
-$email = 'nikkolai@unity3d.com';
+$email = '';
 
 function generate_hash ($params, $secret)
 {

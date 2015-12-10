@@ -9,7 +9,7 @@ Plese keep in mind that this is not a complete example. It only works as far as 
 
 ### [Creating a secret script](id:secret)
 1.	Open [**secrets/12345.inc**](callback/secrets/12345.inc) in a text editor.
-1.	Update the [variable `$secret`](callback/secrets/12345.inc#L2) with the secret md5 hash associated with your game ID. If you don't already know your secret, please contact Unity Ads Support at <support@applifier.com>.
+1.	Update the [variable `$secret`](callback/secrets/12345.inc#L2) with the secret md5 hash associated with your game ID. If you don't already know your secret, please contact [Unity Ads Support](mailto:unityads-support@unity3d.com).
 1.	Then **Save As** using your game ID as the file name to create a new file with your changes. 
 
 ### [Creating a callback script](id:callback)
@@ -44,4 +44,4 @@ Plese keep in mind that this is not a complete example. It only works as far as 
 1.	Enter the URL for your callback script into the address bar of the browser and press enter.
 1.	You should see "Response: 202 - Test OK" on an otherwise blank page, indicating that the script is both publicly visible and working properly.
 
-If the test is successful, contact Unity Ads Support at <support@applifier.com> and request to update the callback URL for your game ID with the URL to your callback script.
+If the test is successful, contact [Unity Ads Support](mailto:unityads-support@unity3d.com) to set the callback URL for your game ID with the URL to your callback script.
