@@ -115,12 +115,12 @@ The following steps can be used to verify that the callback script is both publi
 
 1. Open a new browser window
 2. Enter the URL to your callback script without any parameters
-   ```
-   http://mydomain.com/callback.php
-   ```
+```
+http://mydomain.com/callback.php
+```
 3. The following text should appear:
-   ```
-   Response: 202 - Test OK
-   ```
+```
+Response: 202 - Test OK
+```
 
 [⇧ Back to top](#unity-ads-s2s-callback-example)
