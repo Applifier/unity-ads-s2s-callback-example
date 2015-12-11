@@ -31,7 +31,7 @@ This example covers the first stage of this process.
 
 The [Unity Ads dashboard](http://dashboard.unityads.unity3d.com) does not currently provide a way for you to configure the S2S Redeem Callback URL. To set the callback URL, you will need to submit a request to [Unity Ads Support](mailto:unityads-support@unity3d.com).
 
-> Unity Ads only supports one callback URL per game profile.
+> _**Note:** Unity Ads only supports one callback URL per game profile._
 
 When you contact support, please provide the following information:
 
@@ -44,13 +44,14 @@ The base callback URL should consist of two parts:
 1. The URL where [callback.php](callback.php) will be hosted on your server
 2. The query string containing a `pid` parameter and value
 
+For Example:
 ```
 http://mydomain.com/callback.php?pid=12345
 ```
 
 The `pid` parameter is equivalent to your game ID. The callback script uses it to determine which _secret_ is used to sign the query string of the callback.
 
-> The _secret_ is provided to you by Unity Ads Support when you request to have your base callback URL set. The value of the _secret_ is unique to each game profile.
+> _**Note:** The secret is provided to you by Unity Ads Support when you request to have your base callback URL set. The value of the secret is unique to each game profile._
 
 The `oid`, `sid`, and `hmac` parameters are added to the query string of the base callback URL when the callback is triggered.
 
