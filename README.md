@@ -1,6 +1,6 @@
 # Unity Ads S2S Callback Example
 
-This is a server-side implementation example for handling [Unity Ads](http://unityads.unity3d.com) [Server-to-Server (S2S) Redeem Callbacks](http://unityads.unity3d.com/help/Documentation%20for%20Publishers/Server-to-server-Redeem-Callbacks) using PHP and MySQL.
+A server-side example for handling [Server-to-Server (S2S) Redeem Callbacks](http://unityads.unity3d.com/help/Documentation%20for%20Publishers/Server-to-server-Redeem-Callbacks) from [Unity Ads](http://unityads.unity3d.com) using PHP and MySQL.
 
 >_**Please note:** The use of S2S Redeem Callbacks are not necessary to reward users for watching video ads; users can be rewarded through client-side callback methods triggered by the Unity Ads SDK._
 >
@@ -8,7 +8,7 @@ This is a server-side implementation example for handling [Unity Ads](http://uni
 >
 > _Please be aware that relying solely on S2S Redeem Callbacks for rewarding players has the potential to negatively affect the user experience if any latencies occur during the process._
 
-Rewarding users through S2S Redeem Callbacks is a 2-stage process:
+Rewarding users through S2S Redeem Callbacks is a two-stage process:
 
 1. Validate and store the parameters of the callback (in-bound).
 2. Reward the user and notify the client (out-bound).
@@ -31,23 +31,26 @@ This example covers the first stage of this process.
 
 The [Unity Ads dashboard](http://dashboard.unityads.unity3d.com) does not currently provide a way for you to configure the S2S Redeem Callback URL. To set the callback URL, you will need to submit a request to [Unity Ads Support](mailto:unityads-support@unity3d.com).
 
-When you contact support, be sure to provide the following information:
+> Unity Ads only supports one callback URL per game profile.
+
+When you contact support, please provide the following information:
 
 * Your developer ID
-* The game ID of each game profile or platform
+* The game ID of each game profile
 * The base callback URL for each game ID
 
 The base callback URL should consist of two parts:
-1. The URL where [callback.php]() will be hosted on your server
+
+1. The URL where [callback.php](callback.php) will be hosted on your server
 2. The query string containing a `pid` parameter and value
 
 ```
 http://mydomain.com/callback.php?pid=12345
 ```
 
-The `pid` parameter is equivalent to your game ID. The callback script uses it to determine which `secret` is used to sign the query string of the callback.
+The `pid` parameter is equivalent to your game ID. The callback script uses it to determine which _secret_ is used to sign the query string of the callback.
 
-> The `secret` is provided to you by Unity Ads Support when you request to have your base callback URL set. The value is unique to each game ID.
+> The _secret_ is provided to you by Unity Ads Support when you request to have your base callback URL set. The value of the _secret_ is unique to each game profile.
 
 The `oid`, `sid`, and `hmac` parameters are added to the query string of the base callback URL when the callback is triggered.
 
