@@ -114,13 +114,13 @@ mysql> SHOW COLUMNS FROM callbacks;
 The following steps can be used to verify that the callback script is both publicly accessible and working properly.
 
 1. Open a new browser window
-2. Enter the URL to your callback script without any parameters
-  ```
-  http://mydomain.com/callback.php
-  ```
-3. The following text should appear:
-  ```
-  Response: 202 - Test OK
-  ```
+2. Enter your callback URL without any parameters:  
+```
+http://mydomain.com/callback.php
+```
+The following text should appear:  
+```
+Response: 202 - Test OK
+```
 
 [⇧ Back to top](#unity-ads-s2s-callback-example)
