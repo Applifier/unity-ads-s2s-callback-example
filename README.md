@@ -1,47 +1,122 @@
-Unity Ads S2S Callback Example
-==============================
+# Unity Ads S2S Callback Example
 
-A server-side example for handling [Server-to-Server Redeem Callbacks](http://unityads.unity3d.com/help/Documentation%20for%20Publishers/Server-to-server-Redeem-Callbacks) for [Unity Ads](http://unityads.unity3d.com).
+This is a server-side implementation example for handling [Unity Ads](http://unityads.unity3d.com) [Server-to-Server (S2S) Redeem Callbacks](http://unityads.unity3d.com/help/Documentation%20for%20Publishers/Server-to-server-Redeem-Callbacks) using PHP and MySQL.
 
-Plese keep in mind that this is not a complete example. It only works as far as testing callback functionality between the Unity Ads server and your server. It can however be used as a basis for writing your own callback scripts. See more details in the section for [customizing the reward script](#customizing-the-reward-script).
+>_**Please note:** The use of S2S Redeem Callbacks are not necessary to reward users for watching video ads; users can be rewarded through client-side callback methods triggered by the Unity Ads SDK._
+>
+> _Additionally, we highly recommend using the client-side callback methods for rewarding users, while using S2S Redeem Callbacks as a sanity check to prevent users from abusing the reward system._
+>
+> _Please be aware that relying solely on S2S Redeem Callbacks for rewarding players has the potential to negatively affect the user experience if any latencies occur during the process._
 
-## Setup Instructions
+Rewarding users through S2S Redeem Callbacks is a 2-stage process:
 
-### [Creating a secret script](id:secret)
-1.	Open [**secrets/12345.inc**](callback/secrets/12345.inc) in a text editor.
-1.	Update the [variable `$secret`](callback/secrets/12345.inc#L2) with the secret md5 hash associated with your game ID. If you don't already know your secret, please contact [Unity Ads Support](mailto:unityads-support@unity3d.com).
-1.	Then **Save As** using your game ID as the file name to create a new file with your changes. 
+1. Validate and store the parameters of the callback (in-bound).
+2. Reward the user and notify the client (out-bound).
 
-### [Creating a callback script](id:callback)
-1.	Open [**12345.php**](callback/12345.php) in a text editor and update the [`include` path](callback/12345.php#L2) to your secret script.
-1.	Then **Save As** using your game ID as the file name to create a new file with your changes.
+This example covers the first stage of this process.
 
-### [Customizing the reward script](id:reward)
-1.	Open [**reward.inc**](callback/reward.inc) in a text editor.
-1.	If you would like to receive alerts by email, update the [variable `$email`](callback/reward.inc#L4) with the email address you would like alerts sent to. Otherwise, leave the string empty.
-	
-	**Note:** This assumes your hosting provider allows sending email from PHP scripts.
-	
-1.	To actually validate and reward users, you still need to write the logic for the following functions:
-	*	[`bool check_duplicate_orders ( string $oid )`](callback/reward.inc#L23-L28)
-	*	[`bool give_item_to_player ( string $sid, string $product )`](callback/reward.inc#L30-L35)
-	*	[`bool save_order_number ( string $oid )`](callback/reward.inc#L37-L42)
+## Outline
 
-1.	Then **Save** and **Quit**.
+* [Setting the Callback URL](#setting-the-callback-url)
+* [Configuring the Database](#configuring-the-database)
+  * [The `games` Table](#the-games-table)
+  * [The `callbacks` Table](#the-callbacks-table)
+* [Configuring the Scripts](#configuring-the-scripts)
+  * [The Callback Script](#the-callback-script)
+  * [The Connect Script](#the-connect-script)
+  * [The Update Script](#the-update-script)
+* [Basic Testing](#basic-testing)
 
-### [Publishing to your web server](id:publish)
+## Setting the Callback URL
 
-1.	Transfer the contents of the "callbacks" directory to your web server.
+The [Unity Ads dashboard](http://dashboard.unityads.unity3d.com) does not currently provide a way for you to configure the S2S Redeem Callback URL. To set the callback URL, you will need to submit a request to [Unity Ads Support](mailto:unityads-support@unity3d.com).
 
-1.	Set permissions for the "secrets" directory to only allow user ownership access:
+When you contact support, be sure to provide the following information:
 
-		$ chmod 700 secrets
-	
-	**Important Note:** As a security precaution, the "secrets" directory should be placed outside of the web visible file structure. Move the "secrets" directory to the parent directory of web visible root directory. Then update the relative path references to it within the callback scripts.
+* Your developer ID
+* The game ID of each game profile or platform
+* The base callback URL for each game ID
 
-### [Testing the callback script](id:test)
-1.	Open a browser window.
-1.	Enter the URL for your callback script into the address bar of the browser and press enter.
-1.	You should see "Response: 202 - Test OK" on an otherwise blank page, indicating that the script is both publicly visible and working properly.
+The base callback URL should consist of two parts:
+1. The URL where [callback.php]() will be hosted on your server
+2. The query string containing a `pid` parameter and value
 
-If the test is successful, contact [Unity Ads Support](mailto:unityads-support@unity3d.com) to set the callback URL for your game ID with the URL to your callback script.
+```
+http://mydomain.com/callback.php?pid=12345
+```
+
+The `pid` parameter is equivalent to your game ID. The callback script uses it to determine which `secret` is used to sign the query string of the callback.
+
+> The `secret` is provided to you by Unity Ads Support when you request to have your base callback URL set. The value is unique to each game ID.
+
+The `oid`, `sid`, and `hmac` parameters are added to the query string of the base callback URL when the callback is triggered.
+
+[⇧ Back to top](#unity-ads-s2s-callback-example)
+
+## Configuring the Database
+
+For the purposes of this example, we need to configure two tables in MySQL.
+
+### The `games` Table
+
+This table contains information specific to each game profile.
+
+
+```
+mysql> SHOW COLUMNS FROM games;
++----------+-----------------------+------+-----+---------+-------+
+| Field    | Type                  | Null | Key | Default | Extra |
++----------+-----------------------+------+-----+---------+-------+
+| pid      | varchar(8)            | NO   | PRI | NULL    |       |
+| name     | varchar(32)           | NO   |     | NULL    |       |
+| platform | enum('ios','android') | NO   |     | NULL    |       |
+| secret   | varchar(32)           | NO   |     | NULL    |       |
++----------+-----------------------+------+-----+---------+-------+
+4 rows in set (0.02 sec)
+```
+
+### The `callbacks` Table
+
+This table contains a record of each valid callback received.
+
+```
+mysql> SHOW COLUMNS FROM callbacks;
++----------+-------------+------+-----+---------------------+-------+
+| Field    | Type        | Null | Key | Default             | Extra |
++----------+-------------+------+-----+---------------------+-------+
+| oid      | varchar(16) | NO   | PRI | NULL                |       |
+| sid      | varchar(24) | NO   |     | NULL                |       |
+| pid      | varchar(8)  | NO   |     | NULL                |       |
+| hmac     | char(32)    | NO   |     | NULL                |       |
+| datetime | datetime    | NO   |     | 0000-00-00 00:00:00 |       |
++----------+-------------+------+-----+---------------------+-------+
+5 rows in set (0.03 sec)
+```
+
+[⇧ Back to top](#unity-ads-s2s-callback-example)
+
+## Configuring the Scripts
+
+### The Callback Script
+
+### The Connect Script
+
+### The Update Script
+
+[⇧ Back to top](#unity-ads-s2s-callback-example)
+
+## Basic Testing
+
+The following steps can be used to verify that the callback script is both publicly accessible and working properly.
+
+1. Open a new browser window
+1. Enter the URL to your callback script without any parameters
+```
+http://mydomain.com/callback.php
+```
+1. The following text should appear:
+```
+Response: 202 - Test OK
+```
+
+[⇧ Back to top](#unity-ads-s2s-callback-example)
